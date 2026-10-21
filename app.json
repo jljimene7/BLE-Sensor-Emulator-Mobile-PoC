@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Controls BLE Sensor Emulator",
+    "slug": "controls-ble-sensor-emulator",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}
