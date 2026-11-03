@@ -1,25 +1,47 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useSensorEmulatorController } from '../application/useSensorEmulatorController';
+import type { BluetoothState, IBleServerAdapter } from '../application/ports/IBleServerAdapter';
 import { MatrixGrid } from './MatrixGrid';
 
-/** Displays the stable Device ID, current matrix, and matrix generation action. */
-export function SensorScreen() {
-  const { deviceId, matrix, generateNewMatrix } = useSensorEmulatorController();
+const BLUETOOTH_LABELS: Record<BluetoothState, string> = {
+  unknown: 'Initializing Bluetooth…',
+  resetting: 'Bluetooth is resetting…',
+  unsupported: 'Bluetooth peripheral mode is unavailable on this device.',
+  unauthorized: 'Bluetooth access denied. Allow access in iPhone Settings.',
+  poweredOff: 'Bluetooth is off. Turn it on in iPhone Settings.',
+  poweredOn: 'Bluetooth is on',
+  unavailable: 'BLE is unavailable in this app build.',
+};
+
+/** Displays controller state and forwards user actions without knowing the BLE implementation. */
+export function SensorScreen({ bleServer }: { bleServer: IBleServerAdapter }) {
+  const { deviceId, matrix, bleStatus, isSending, message, generateAndSend } =
+    useSensorEmulatorController(bleServer);
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <Text style={styles.eyebrow}>CONIFER TECHNOLOGIES</Text>
         <Text style={styles.title}>Sensor Emulator</Text>
         <Text style={styles.description}>
-          Generate an 8 × 8 sample sensor matrix.
+          Generate and send an 8 × 8 sensor matrix over Bluetooth.
         </Text>
       </View>
 
       <View style={styles.deviceCard}>
         <Text style={styles.label}>DEVICE ID</Text>
         <Text style={styles.deviceId}>{deviceId}</Text>
+      </View>
+
+      <View style={styles.bleCard} accessibilityLiveRegion="polite">
+        <Text style={styles.label}>BLUETOOTH</Text>
+        <Text style={styles.status}>{BLUETOOTH_LABELS[bleStatus.bluetoothState]}</Text>
+        <Text style={styles.description}>
+          {bleStatus.isAdvertising ? 'Advertising sensor service' : 'Not advertising'}
+          {' · '}{bleStatus.subscriberCount} subscribed client(s)
+        </Text>
+        {bleStatus.error ? <Text style={styles.feedback}>{bleStatus.error}</Text> : null}
       </View>
 
       <View style={styles.matrixSection}>
@@ -29,14 +51,18 @@ export function SensorScreen() {
 
       <Pressable
         accessibilityRole="button"
-        onPress={generateNewMatrix}
+        accessibilityState={{ disabled: isSending, busy: isSending }}
+        disabled={isSending}
+        onPress={() => { void generateAndSend(); }}
         style={({ pressed }) => [
           styles.button,
           pressed && styles.buttonPressed,
+          isSending && styles.buttonDisabled,
         ]}
       >
-        <Text style={styles.buttonText}>Generate Matrix</Text>
+        <Text style={styles.buttonText}>{isSending ? 'Sending…' : 'Generate & Send'}</Text>
       </Pressable>
+      {message ? <Text style={styles.feedback} accessibilityLiveRegion="polite">{message}</Text> : null}
     </ScrollView>
   );
 }
@@ -77,6 +103,22 @@ const styles = StyleSheet.create({
     marginBottom: 28,
     padding: 16,
   },
+  bleCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 24,
+    padding: 16,
+  },
+  status: {
+    color: '#18323C',
+    fontSize: 15,
+    marginTop: 8,
+  },
+  feedback: {
+    color: '#597078',
+    fontSize: 14,
+    marginTop: 12,
+  },
   label: {
     color: '#597078',
     fontSize: 11,
@@ -108,6 +150,9 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     backgroundColor: '#12635D',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#FFFFFF',
