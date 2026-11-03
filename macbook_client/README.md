@@ -6,7 +6,7 @@ frames, validates the 72-byte packet and `SENS-001` Device ID, and prints the
 8 × 8 matrix in row-major order.
 
 The UUIDs, packet layout, and transport framing follow Protocol Version 1.0 in
-[`../docs/BLE_PROTOCOL.md`](../docs/BLE_PROTOCOL.md). This client does not modify
+[`../.github/BLE_PROTOCOL.md`](../.github/BLE_PROTOCOL.md). This client does not modify
 or implement mobile BLE behavior.
 
 ## Install

@@ -45,9 +45,16 @@ Native BLE implementation, when required:
 
 Current milestone:
 
-**Step 1 — Mobile App + Matrix Generation**
+**Milestone 6 — Implement iOS BLE Peripheral & GATT Server (GitHub issue #51)**
 
-Implement only the functionality required for Step 1 unless explicitly asked to move to another phase.
+The matrix UI and packet marshaller are implemented. The current milestone adds
+the BLE port, iOS adapter, local Expo Swift/CoreBluetooth module, development
+build configuration, and BLE status/Generate & Send UI. Implementation and
+validation status are recorded in `docs/context/issue_6.md`. Full iOS compilation and
+physical-device evidence are required before claiming the BLE milestone is verified.
+
+The Step 1 scope and restrictions below describe the original foundation only;
+they do not prohibit the current, explicitly authorized BLE implementation.
 
 ### Allowed in Step 1
 
@@ -250,11 +257,9 @@ The Device ID does not.
 
 ---
 
-## 5. FUTURE BLE PORT
+## 5. BLE PORT
 
-Do not implement during Step 1.
-
-Future location:
+Location:
 
 `src/application/ports/IBleServerAdapter.ts`
 
@@ -262,46 +267,47 @@ Purpose:
 
 Define a platform-independent BLE peripheral contract.
 
-Possible future operations:
+Operations:
 
 ```typescript
 startAdvertising(): Promise<void>;
 stopAdvertising(): Promise<void>;
-notifyClients(data: Uint8Array): Promise<void>;
+notifyClients(packet: Uint8Array): Promise<void>;
+getStatus(): Promise<BleServerStatus>;
+subscribe(listener: (status: BleServerStatus) => void): BleSubscription;
 ```
 
 Application logic must depend on this abstraction rather than directly on native BLE APIs.
 
 ---
 
-## 6. FUTURE INFRASTRUCTURE
+## 6. INFRASTRUCTURE
 
-Do not implement during Step 1.
-
-Future location:
+Location:
 
 ```text
 src/infrastructure/
 ```
 
-Potential implementations:
+Current implementation:
 
 ```text
 BleGattServerAdapter.ts
-MockBleAdapter.ts
 ```
 
-`BleGattServerAdapter` will implement the BLE port and communicate with the native mobile BLE implementation.
+`BleGattServerAdapter` implements the BLE port and communicates with the local
+Expo module in `modules/sensor-ble-server`. CoreBluetooth and notification
+framing remain in the native module.
 
 `MockBleAdapter` may be introduced when application-layer BLE behavior needs to be exercised without native BLE hardware.
 
-Do not create these files before they are needed.
+Create additional adapters only when needed by an actual requirement.
 
 ---
 
 ## 7. BLE PROTOCOL CONTRACT — VERSION 1.0
 
-The authoritative BLE protocol is documented in `docs/BLE_PROTOCOL.md`.
+The authoritative BLE protocol is documented in `.github/BLE_PROTOCOL.md`.
 Implementations must use the UUIDs, logical-packet layout, and notification
 framing defined there. Do not implement future BLE or serialization behavior
 during Step 1 unless explicitly requested.
@@ -429,7 +435,7 @@ The Sensor Data Characteristic requires:
 
 ## 9. NATIVE BLE IMPLEMENTATION
 
-Future phase only.
+Current iOS milestone; Android remains a future phase.
 
 Prefer the simplest maintained solution that satisfies:
 - BLE peripheral role
@@ -610,10 +616,11 @@ When generating or modifying code:
 11. Preserve architectural boundaries.
 12. Do not claim hardware functionality has been validated without physical-device evidence.
 13. Treat generated code as requiring verification; do not assume generated code is correct merely because it compiles.
+14. The project skills lockfile is `.github/skills-lock.json`; consult that path when a task involves the project's skills.
 
 ---
 
-## 15. DEFINITION OF DONE — CURRENT STEP
+## 15. DEFINITION OF DONE — ORIGINAL STEP 1
 
 Before declaring Step 1 complete:
 
@@ -633,7 +640,7 @@ Before declaring Step 1 complete:
 
 The authoritative BLE communication protocol is defined in:
 
-`docs/BLE_PROTOCOL.md`
+`.github/BLE_PROTOCOL.md`
 
 All BLE-related implementations must follow this specification.
 
@@ -646,7 +653,7 @@ This includes:
 - Chunk indexing and reassembly rules
 
 Do not modify the BLE protocol without explicitly updating
-`docs/BLE_PROTOCOL.md` and the corresponding tests.
+`.github/BLE_PROTOCOL.md` and the corresponding tests.
 
 ---
 
@@ -670,11 +677,11 @@ Run tests:
 npm test
 ```
 
-Native development builds — future BLE phase:
+Native development builds — current iOS BLE phase:
 
 ```bash
 npx expo run:ios
-npx expo run:android
+npm run ios:device
 ```
 
 EAS preview builds — future release phase:
