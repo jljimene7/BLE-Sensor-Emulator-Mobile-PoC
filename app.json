@@ -17,6 +17,6 @@
         "NSBluetoothAlwaysUsageDescription": "Allow this iPhone to advertise the sensor emulator and send sensor samples to your MacBook over Bluetooth."
       }
     },
-    "plugins": ["expo-dev-client", "./plugins/withQuotedIosBundleScript"]
+    "plugins": ["expo-dev-client", "./plugins/withQuotedIosBundleScript", "./plugins/withDisabledScriptSandboxing", "./plugins/withIosSceneLifecycle"]
   }
 }
