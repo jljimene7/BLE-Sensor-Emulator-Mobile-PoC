@@ -73,4 +73,10 @@ partial transmission before sending another sample.
 
 The [BLE protocol](./.github/BLE_PROTOCOL.md) defines the UUIDs and byte layout.
 [Milestone 6 notes](./docs/context/issue_6.md) list the implementation, checks performed,
-the successful native iOS build, and outstanding physical-iPhone verification for issue #51.
+and the 2026-11-03 physical iPhone-to-MacBook validation for issue #2.
+
+Step-by-step setup with screenshots, troubleshooting, and the release plan:
+[iOS walkthrough](./docs/context/ios-walkthrough.md),
+[Android walkthrough (planned)](./docs/context/android-walkthrough.md), and the
+[project update](./docs/context/project-update-2026-11-03.md). If the development
+launcher finds no servers, use **Enter URL manually** with `http://<mac-ip>:8081`.
