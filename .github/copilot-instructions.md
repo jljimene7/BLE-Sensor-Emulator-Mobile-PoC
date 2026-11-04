@@ -45,7 +45,7 @@ Native BLE implementation, when required:
 
 Current milestone:
 
-**Milestone 6 — Implement iOS BLE Peripheral & GATT Server (GitHub issue #51)**
+**Milestone 6 — Implement iOS BLE Peripheral & GATT Server (GitHub issue #2)**
 
 The matrix UI and packet marshaller are implemented. The current milestone adds
 the BLE port, iOS adapter, local Expo Swift/CoreBluetooth module, development
